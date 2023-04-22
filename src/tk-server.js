@@ -82,7 +82,7 @@ class Device {
 		msgsout++;
 	}
 
-	async incomingTracker(data) {
+	async IncomingDevice(data) {
 		this.bytin += data.length;
 		bytsin += data.length;
 		let th = this;
