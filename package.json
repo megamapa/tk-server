@@ -1,0 +1,30 @@
+{
+  "name": "tk-server",
+  "version": "1.0.0",
+  "description": "Tkstar Server",
+  "main": "tk-server.js",
+  "scripts": {
+    "server": "node src/tk-server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megamapa/tk-server.git"
+  },
+  "keywords": [
+    "tk-905",
+    "tk-911"
+  ],
+  "author": "MegaMapa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/megamapa/tk-server/issues"
+  },
+  "homepage": "https://github.com/megamapa/tk-server#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ioredis": "^5.3.2",
+    "mysql": "^2.18.1",
+    "net": "^1.0.2",
+    "os": "^0.1.2"
+  }
+}
