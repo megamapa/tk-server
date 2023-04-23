@@ -105,7 +105,7 @@ class Device {
 						SendCmd(this, '[SG*' + this.id + '*0002*TS]');
 					}
 					// Envia log
-					writelog(this.id, 'R', ln + ']');
+					this.PublishLog(ln + ']');
 
 					// Atualiza contadores
 					this.msgin++;
@@ -182,7 +182,7 @@ class Device {
 							this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 						}
 						// Envia log
-						writelog(this.id, 'R', ln + '#');
+						this.PublishLog(ln + '#');
 
 						// Responde ao device
 						SendCmd(this, '*HQ,' + this.id + ',V4,V1,' + FormatDate() + '#');
@@ -241,7 +241,7 @@ class Device {
 								this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 							}
 							// Envia log
-							writelog(this.id, 'R', ln);
+							this.PublishLog(ln);
 
 							// Atualiza contadores
 							this.msgin++;
