@@ -44,7 +44,7 @@ class Device {
 	async PublishDevice(str) {
 		// Verifica se a chave existe indicando que o cliente ainda esta conectado
 		hub.exists('did:'+this.did, function (err, result) {
-			if (result) {
+			if (result==1) {
 				pub.publish('did:'+this.did,'{"did":"'+this.did+'",'+str+'}');
 			};
 		});
@@ -54,7 +54,7 @@ class Device {
 	async PublishLog(str) {
 		// Verifica se a chave existe indicando que o cliente ainda está conectado
 		hub.exists('log:'+this.did, function (err, result) {
-			if (result) {
+			if (result==1) {
 				// Publish text
 				GetDate().then(dte => {	pub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
 			}
