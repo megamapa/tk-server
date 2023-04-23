@@ -61,7 +61,7 @@ class Device {
 		});
 	}
 
-	async InitDevice(did) {
+	async f(did) {
 		// Update ID and login datetime
 		this.did = did;
 		this.login = new Date(new Date().getTime()).toISOString().replace(/T/,' ').replace(/\..+/, '');
@@ -98,9 +98,9 @@ class Device {
 					let par = ln.split("*");
 					// Testa se é a primeira mensagem
 					if (this.id === '') {
-						await this.initTracker(par[1]);
+						await this.InitDevice(par[1]);
 						// Publica login
-						this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
+						this.PublishDevice('"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 						// Responde ao device
 						this.SendToDevice('[SG*' + this.id + '*0002*TS]');
 					}
@@ -139,7 +139,7 @@ class Device {
 							}
 
 							// Publica
-							this.pubTracker(th.id, '"act":"data","gps":[{"dtm":"' + th.dte + '","pos":[' + th.lat + ',' + th.lng + ',' + th.alt + ',' + th.dir + ',' + th.spd + ']' + lbs + '}]').catch(err => console.error(err));
+							this.PublishDevice('"act":"data","gps":[{"dtm":"' + th.dte + '","pos":[' + th.lat + ',' + th.lng + ',' + th.alt + ',' + th.dir + ',' + th.spd + ']' + lbs + '}]').catch(err => console.error(err));
 
 							// Formata LBS como JSON
 							if (lbs.length > 0) { lbs = lbs.slice(1); lbs = '{' + lbs + '}' }
@@ -177,9 +177,9 @@ class Device {
 						let par = ln.split(",");
 						// Testa se é a primeira mensagem 
 						if (this.id === '') {
-							await this.initTracker(par[1]);
+							await this.InitDevice(par[1]);
 							// Publica login
-							this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
+							this.PublishDevice('"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 						}
 						// Envia log
 						this.PublishLog(ln + '#');
@@ -212,7 +212,7 @@ class Device {
 								});
 
 								// Publica
-								this.pubTracker(this.id, '"act":"data","bat":"' + this.bat + '"');
+								this.PublishDevice('"act":"data","bat":"' + this.bat + '"');
 								break;
 
 							case 'NBR':
@@ -236,9 +236,9 @@ class Device {
 							data = data.slice(47);
 							// Testa se é a primeira mensagem 
 							if (this.id === '') {
-								await this.initTracker(ln.substring(2, 12));
+								await this.InitDevice(ln.substring(2, 12));
 								// Publica login
-								this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
+								this.PublishDevice('"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 							}
 							// Envia log
 							this.PublishLog(ln);
@@ -265,7 +265,7 @@ class Device {
 								}
 							});
 							// Publica
-							this.pubTracker(this.id, '"act":"data","bat":"' + this.bat + '"');
+							this.PublishDevice('"act":"data","bat":"' + this.bat + '"');
 						} else { return }
 					} else { data = data.slice(1); }
 		}
