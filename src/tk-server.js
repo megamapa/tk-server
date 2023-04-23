@@ -54,7 +54,7 @@ class Device {
 	async PublishLog(str) {
 		// Verifica se a chave existe indicando que o cliente ainda está conectado
 		hub.exists('log:'+this.did, function (err, result) {
-			if (result==0) {
+			if (result) {
 				// Publish text
 				GetDate().then(dte => {	pub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
 			}
@@ -326,7 +326,8 @@ const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { GetDate().then(dte => {console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
+hub.on('connect', function () { GetDate().then(dte => { console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');
+														console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m');}); });
 
 /****************************************************************************************************/
 /* Create and open MySQL connection																	*/
@@ -365,8 +366,8 @@ server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
 server.on('listening', function () { PublishUpdate(); GetDate().then(dte => { 	
-	console.log('\033[30m'+dte+': \033[32mServer ready.\033[0;0m');
-	console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m'); }); 
+	console.log('\033[30m'+dte+': \033[32mServer connected..\033[0;0m');
+	}); 
 });
 
 /****************************************************************************************************/
