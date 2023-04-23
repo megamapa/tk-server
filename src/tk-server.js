@@ -45,7 +45,7 @@ class Device {
 		// Verifica se a chave existe indicando que o cliente ainda esta conectado
 		hub.exists('did:'+this.did, function (err, result) {
 			if (result==1) {
-				pub.publish('did:'+this.did,'{"did":"'+this.did+'",'+str+'}');
+				hub.publish('did:'+this.did,'{"did":"'+this.did+'",'+str+'}');
 			};
 		});
 	}
@@ -56,7 +56,7 @@ class Device {
 		hub.exists('log:'+this.did, function (err, result) {
 			if (result==1) {
 				// Publish text
-				GetDate().then(dte => {	pub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
+				GetDate().then(dte => {	hub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
 			}
 		});
 	}
@@ -308,7 +308,7 @@ async function OpenDevice(socket) {
 async function PublishUpdate() {
 	GetDate().then(dte => {
 		let uptime = Date.parse(dte) - starttime;
-		pub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"'+process.env.SrvIP+':'+process.env.SrvPort+'","uptime":"'+Math.floor(uptime/60000)+'"}');
+		hub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"'+process.env.SrvIP+':'+process.env.SrvPort+'","uptime":"'+Math.floor(uptime/60000)+'"}');
 	});
 }
 
@@ -323,7 +323,7 @@ dotenv.config();
 /****************************************************************************************************/
 const Redis = require('ioredis');
 const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
-const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
+//const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
 hub.on('connect', function () { GetDate().then(dte => { console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');
