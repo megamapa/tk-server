@@ -330,8 +330,8 @@ hub.on('connect', function () { GetDate().then(dte => { console.log('\033[30m'+d
 														console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m');}); 
 													
 													
-													
-													
+														hub.set('log:9139003741','Teste');
+														hub.set('log:9139003748','Carro');
 														hub.set('log:9139003745','Megamapa');
 													});
 
@@ -371,9 +371,9 @@ const server = net.createServer(OpenDevice);
 server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
-server.on('listening', function () { PublishUpdate(); GetDate().then(dte => { 	
+server.on('listening', function () { PublishUpdate(); GetDate().then(dte => {
 	console.log('\033[30m'+dte+': \033[32mServer connected.\033[0;0m');
-	}); 
+	});
 });
 
 /****************************************************************************************************/
