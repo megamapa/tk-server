@@ -327,7 +327,13 @@ const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 
 // Updates server status as soon as it successfully connects
 hub.on('connect', function () { GetDate().then(dte => { console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');
-														console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m');}); });
+														console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m');}); 
+													
+													
+													
+													
+														hub.set('log:9139003745','Megamapa');
+													});
 
 /****************************************************************************************************/
 /* Create and open MySQL connection																	*/
