@@ -54,7 +54,7 @@ class Device {
 	async PublishLog(str) {
 		// Verifica se a chave existe indicando que o cliente ainda está conectado
 		hub.exists('log:'+this.did, function (err, result) {
-			if (result==1) {
+			if (result==0) {
 				// Publish text
 				GetDate().then(dte => {	hub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
 			}
@@ -372,7 +372,7 @@ server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
 server.on('listening', function () { PublishUpdate(); GetDate().then(dte => { 	
-	console.log('\033[30m'+dte+': \033[32mServer connected..\033[0;0m');
+	console.log('\033[30m'+dte+': \033[32mServer connected.\033[0;0m');
 	}); 
 });
 
