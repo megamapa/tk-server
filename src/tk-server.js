@@ -102,7 +102,7 @@ class Device {
 						// Publica login
 						this.pubTracker(th.id, '"act":"login","dte":"' + th.login + '"').catch(err => console.error(err));
 						// Responde ao device
-						SendCmd(this, '[SG*' + this.id + '*0002*TS]');
+						this.SendToDevice('[SG*' + this.id + '*0002*TS]');
 					}
 					// Envia log
 					this.PublishLog(ln + ']');
@@ -152,10 +152,10 @@ class Device {
 							});
 							break;
 
-						case 'LK': SendCmd(this, '[SG*' + this.id + '*0002*LK]');
+						case 'LK': this.SendToDevice('[SG*' + this.id + '*0002*LK]');
 							break;
 
-						case 'AL': SendCmd(this, '[SG*' + this.id + '*0002*AL]');
+						case 'AL': this.SendToDevice('[SG*' + this.id + '*0002*AL]');
 							break;
 
 						case 'CCID': this.iccid = fld[1]; // Grava ccid
@@ -185,7 +185,7 @@ class Device {
 						this.PublishLog(ln + '#');
 
 						// Responde ao device
-						SendCmd(this, '*HQ,' + this.id + ',V4,V1,' + FormatDate() + '#');
+						this.SendToDevice('*HQ,' + this.id + ',V4,V1,' + FormatDate() + '#');
 
 						// Atualiza contadores
 						this.msgin++;
