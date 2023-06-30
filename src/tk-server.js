@@ -61,15 +61,18 @@ class Device {
 		});
 	}
 
-	async f(did) {
-		// Update ID and login datetime
-		this.did = did;
-		this.login = new Date(new Date().getTime()).toISOString().replace(/T/,' ').replace(/\..+/, '');
-		// Publish login
-		this.PublishDevice('"datetime":"'+this.login+'","type":"login"').catch(err => console.error(err));
-		// Publish login
-		this.PublishLog('<div class=warning>Connected</div>');
-		numdev++;
+	async InitDevice(did) {
+		let th=this;
+		GetDate().then(dte => {
+			// Update ID and login datetime
+			th.did = did;
+			th.login = dte;
+			// Publish login
+			th.PublishDevice('"datetime":"'+th.login+'","type":"login"').catch(err => console.error(err));
+			// Publish login
+			th.PublishLog('<div class=warning>Connected</div>');
+			numdev++;
+		});
 	}
 
 	async SendToDevice(buff){
@@ -274,20 +277,22 @@ class Device {
 	async CloseDevice() {
 		// Verifica se a conexão foi de um device valido
 		if (this.did!=='') {
-			// Get logout datetime
-			this.logout = new Date(new Date().getTime()).toISOString().replace(/T/,' ').replace(/\..+/, '');
-			// Grava log da conexão do device
 			let th=this;
-			db.getConnection(function (err, connection) {
-				if (!err) {
-					connection.query('INSERT INTO devlog (did,login,logout,bytin,bytout,msgin,msgout) VALUES (?,?,?,?,?,?,?)', [th.did, th.login, th.logout, th.bytin, th.bytout, th.msgin, th.msgout], function (err, result) { connection.release(); if (err) { err => console.error(err); } });
-				}
+			GetDate().then(dte => {
+				// Get logout datetime
+				th.logout = dte;
+				// Grava log da conexão do device
+				db.getConnection(function (err, connection) {
+					if (!err) {
+						connection.query('INSERT INTO devlog (did,login,logout,bytin,bytout,msgin,msgout) VALUES (?,?,?,?,?,?,?)', [th.did, th.login, th.logout, th.bytin, th.bytout, th.msgin, th.msgout], function (err, result) { connection.release(); if (err) { err => console.error(err); } });
+					}
+				});
+				// Publish logout
+				th.PublishDevice('"datetime":"'+th.logout+'","type":"logout","err":"'+th.err+'"').catch(err => console.error(err));
+				// Publish log
+				th.PublishLog('<div class=warning>Disconnected: '+th.err+'</div>');
+				numdev--;
 			});
-			// Publish logout
-			this.PublishDevice('"datetime":"'+this.logout+'","type":"logout","err":"'+this.err+'"').catch(err => console.error(err));
-			// Publish log
-			this.PublishLog('<div class=warning>Disconnected: '+this.err+'</div>');
-			numdev--;
 		}	
 	}
 }
@@ -305,7 +310,7 @@ async function OpenDevice(socket) {
 }
 
 // Publish update status
-async function PublishUpdate() {
+async function UpdateSAN() {
 	GetDate().then(dte => {
 		let uptime = Date.parse(dte) - starttime;
 		hub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"'+process.env.SrvIP+':'+process.env.SrvPort+'","uptime":"'+Math.floor(uptime/60000)+'"}');
@@ -346,20 +351,21 @@ var starttime=0,numdev=0,msgsin=0,msgsout=0,bytsin=0,bytsout=0,bytserr=0;
 
 // Update statistics ever 60s
 setInterval(function() {
-			// Get datetime
-			let dte = new Date(new Date().getTime()).toISOString().replace(/T/,' ').replace(/\..+/, '');
 			// Publish update status
-			PublishUpdate();
-			// Update database
-			db.getConnection(function(err,connection){
-				if (!err) {
-					connection.query('INSERT INTO syslog (datlog,server,version,ipport,devices,msgsin,msgsout,bytsin,bytsout,bytserr) VALUES (?,?,?,?,?,?,?,?,?,?)',[dte, process.title, Version, process.env.SrvIP + ':' + process.env.SrvPort, numdev, msgsin, msgsout, bytsin, bytsout, bytserr],function (err, result) {connection.release(); if (err) err => console.error(err);});
-				}
-				msgsin=0;
-				msgsout=0;
-				bytsin=0;
-				bytsout=0;
-				bytserr=0;
+			UpdateSAN();
+			// Get datetime
+			GetDate().then(dte => {
+				// Update database
+				db.getConnection(function(err,connection){
+					if (!err) {
+						connection.query('INSERT INTO syslog (datlog,server,version,ipport,devices,msgsin,msgsout,bytsin,bytsout,bytserr) VALUES (?,?,?,?,?,?,?,?,?,?)',[dte, process.title, Version, process.env.SrvIP + ':' + process.env.SrvPort, numdev, msgsin, msgsout, bytsin, bytsout, bytserr],function (err, result) {connection.release(); if (err) err => console.error(err);});
+					}
+					msgsin=0;
+					msgsout=0;
+					bytsin=0;
+					bytsout=0;
+					bytserr=0;
+				});
 			});
 },60000);
 
@@ -371,7 +377,7 @@ const server = net.createServer(OpenDevice);
 server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
-server.on('listening', function () { PublishUpdate(); GetDate().then(dte => {
+server.on('listening', function () { UpdateSAN(); GetDate().then(dte => {
 	console.log('\033[30m'+dte+': \033[32mServer connected.\033[0;0m');
 	});
 });
