@@ -331,8 +331,8 @@ const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 //const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { GetDate().then(dte => { console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');
-														console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m');}); 
+hub.on('connect', function () { GetDate().then(dte => { console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');
+														console.log('\033[36m'+dte+': \033[32mWaiting clients...\033[0;0m');}); 
 													
 													
 														hub.set('log:9139003741','Teste');
@@ -378,7 +378,7 @@ server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
 server.on('listening', function () { UpdateSAN(); GetDate().then(dte => {
-	console.log('\033[30m'+dte+': \033[32mServer connected.\033[0;0m');
+	console.log('\033[36m'+dte+': \033[32mServer connected.\033[0;0m');
 	});
 });
 
@@ -390,8 +390,8 @@ GetDate().then(dte => {
 	// Save start datetime
 	starttime = Date.parse(dte);
 	// Show parameters and waiting clients
-	console.log('\033[30m'+dte+': \033[37m================================');
-	console.log('\033[30m'+dte+': \033[37m' + 'APP : ' + process.title + ' ('+Version+')');
-	console.log('\033[30m'+dte+': \033[37m' + 'IP/Port : ' + process.env.SrvIP + ':' + process.env.SrvPort);
-	console.log('\033[30m'+dte+': \033[37m' + 'CPUs: '+ OS.cpus().length);
-	console.log('\033[30m'+dte+': \033[37m================================\033[0;0m');});
+	console.log('\033[36m'+dte+': \033[37m================================');
+	console.log('\033[36m'+dte+': \033[37m' + 'APP : ' + process.title + ' ('+Version+')');
+	console.log('\033[36m'+dte+': \033[37m' + 'IP/Port : ' + process.env.SrvIP + ':' + process.env.SrvPort);
+	console.log('\033[36m'+dte+': \033[37m' + 'CPUs: '+ OS.cpus().length);
+	console.log('\033[36m'+dte+': \033[37m================================\033[0;0m');});
