@@ -45,7 +45,7 @@ class Device {
 		// Verifica se a chave existe indicando que o cliente ainda esta conectado
 		hub.exists('did:'+this.did, function (err, result) {
 			if (result==1) {
-				hub.publish('did:'+this.did,'{"did":"'+this.did+'",'+str+'}');
+				pub.publish('did:'+this.did,'{"did":"'+this.did+'",'+str+'}');
 			};
 		});
 	}
@@ -56,7 +56,7 @@ class Device {
 		hub.exists('log:'+this.did, function (err, result) {
 			if (result==0) {
 				// Publish text
-				GetDate().then(dte => {	hub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
+				GetDate().then(dte => {	pub.publish('san:monitor_update','<li><div class=datetime>'+dte+' : </div>'+str+'</li>'); });
 			}
 		});
 	}
@@ -310,10 +310,10 @@ async function OpenDevice(socket) {
 }
 
 // Publish update status
-async function UpdateSAN() {
+async function PublishUpdate() {
 	GetDate().then(dte => {
 		let uptime = Date.parse(dte) - starttime;
-		hub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"'+process.env.SrvIP+':'+process.env.SrvPort+'","uptime":"'+Math.floor(uptime/60000)+'"}');
+		pub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"'+process.env.SrvIP+':'+process.env.SrvPort+'","uptime":"'+Math.floor(uptime/60000)+'"}');
 	});
 }
 
@@ -328,11 +328,11 @@ dotenv.config();
 /****************************************************************************************************/
 const Redis = require('ioredis');
 const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
-//const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
+const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { GetDate().then(dte => { console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');
-														console.log('\033[36m'+dte+': \033[32mWaiting clients...\033[0;0m');}); 
+pub.on('connect', function () { GetDate().then(dte => { console.log('\033[36m'+dte+' \033[32mHUB connected.\033[0;0m');
+														console.log('\033[36m'+dte+' \033[32mWaiting clients...\033[0;0m');}); 
 													
 													
 														hub.set('log:9139003741','Teste');
@@ -352,7 +352,7 @@ var starttime=0,numdev=0,msgsin=0,msgsout=0,bytsin=0,bytsout=0,bytserr=0;
 // Update statistics ever 60s
 setInterval(function() {
 			// Publish update status
-			UpdateSAN();
+			PublishUpdate();
 			// Get datetime
 			GetDate().then(dte => {
 				// Update database
@@ -377,8 +377,8 @@ const server = net.createServer(OpenDevice);
 server.listen(process.env.SrvPort, process.env.SrvIP);
 
 // Updates server status as soon as it successfully connects
-server.on('listening', function () { UpdateSAN(); GetDate().then(dte => {
-	console.log('\033[36m'+dte+': \033[32mServer connected.\033[0;0m');
+server.on('listening', function () { PublishUpdate(); GetDate().then(dte => {
+	console.log('\033[36m'+dte+' \033[32mServer ready.\033[0;0m');
 	});
 });
 
@@ -390,8 +390,8 @@ GetDate().then(dte => {
 	// Save start datetime
 	starttime = Date.parse(dte);
 	// Show parameters and waiting clients
-	console.log('\033[36m'+dte+': \033[37m================================');
-	console.log('\033[36m'+dte+': \033[37mAPP : ' + process.title + ' ('+Version+')');
-	console.log('\033[36m'+dte+': \033[37mIP/Port : ' + process.env.SrvIP + ':' + process.env.SrvPort);
-	console.log('\033[36m'+dte+': \033[37mCPUs: '+ OS.cpus().length);
-	console.log('\033[36m'+dte+': \033[37m================================\033[0;0m');});
+	console.log('\033[36m'+dte+' \033[37m================================');
+	console.log('\033[36m'+dte+' \033[37mAPP : ' + process.title + ' ('+Version+')');
+	console.log('\033[36m'+dte+' \033[37mIP/Port : ' + process.env.SrvIP + ':' + process.env.SrvPort);
+	console.log('\033[36m'+dte+' \033[37mCPUs: '+ OS.cpus().length);
+	console.log('\033[36m'+dte+' \033[37m================================\033[0;0m');});
